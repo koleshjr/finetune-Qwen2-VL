@@ -2,17 +2,25 @@ import torch
 import json
 import datetime
 import os
-
+# Debugging and logging configurations
+import os
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torch.optim import AdamW
 from functools import partial
+from torch.distributed.elastic.multiprocessing.errors import record
 
 from util.vision_util import process_vision_info
 from util.logutil import init_logger, get_logger
 
 from accelerate import Accelerator
+
+os.environ['TORCH_DISTRIBUTED_DEBUG'] = 'DETAIL'  # Enables detailed logging for distributed debugging
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"         # Forces synchronous CUDA execution for debugging
+os.environ['NCCL_DEBUG'] = "INFO"                # Logs NCCL operations for distributed training
+os.environ['TORCH_SHOW_CPP_STACKTRACES'] = "1"   # Displays C++ stack traces for better error messages
+os.environ['TORCH_CPP_LOG_LEVEL'] = "INFO"       # Sets C++ log level for PyTorch internals
 
 accelerator = Accelerator(gradient_accumulation_steps=2)
 device = accelerator.device
@@ -120,7 +128,7 @@ def write_chat_template(processor, output_dir):
     with open(output_chat_template_file, "w", encoding="utf-8") as writer:
         writer.write(chat_template_json_string)
         logger.info(f"chat template saved in {output_chat_template_file}")
-
+@record
 def train():
     # Load the model on the available device(s)
     # We recommend enabling flash_attention_2 for better acceleration and memory saving, especially in multi-image and video scenarios.
@@ -135,7 +143,8 @@ def train():
     #   Unrecognized keys in `rope_scaling` for 'rope_type'='default': {'mrope_section'}"
     # It is a issue, see https://github.com/huggingface/transformers/issues/33401
     model = Qwen2VLForConditionalGeneration.from_pretrained(
-        "Qwen/Qwen2-VL-2B-Instruct", torch_dtype="bfloat16"
+        "Qwen/Qwen2-VL-2B-Instruct", torch_dtype="bfloat16",
+        attn_implementation="flash_attention_2",
     )
 
 
@@ -156,16 +165,16 @@ def train():
     # https://github.com/pytorch/pytorch/issues/110213
     # transformers/models/qwen2_vl/modeling_qwen2_vl.py: causal_mask = AttentionMaskConverter._unmask_unattended(causal_mask, min_dtype)
     
-    processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=256*28*28, max_pixels=512*28*28, padding_side="right")
+    processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=256*28*28, max_pixels=1024*28*28, padding_side="left")
 
     train_loader = DataLoader(
-        ToyDataSet("train_data/data.json"),
+        ToyDataSet("json_outputs_train/final_train.json"),
         batch_size=1,
         collate_fn=partial(collate_fn, processor=processor, device=device)
     )
 
     model.train()
-    epochs = 10
+    epochs = 3
     optimizer = AdamW(model.parameters(), lr=1e-5)
 
     model, optimizer, train_loader = accelerator.prepare(model, optimizer, train_loader)

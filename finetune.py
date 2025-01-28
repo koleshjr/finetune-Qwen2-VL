@@ -11,6 +11,9 @@ from functools import partial
 
 from util.vision_util import process_vision_info
 from util.logutil import init_logger, get_logger
+from dotenv import load_dotenv
+
+load_dotenv()
 
 output_dir = f'train_output/{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}/'
 init_logger(output_dir)
@@ -208,16 +211,16 @@ def train():
     # https://github.com/pytorch/pytorch/issues/110213
     # transformers/models/qwen2_vl/modeling_qwen2_vl.py: causal_mask = AttentionMaskConverter._unmask_unattended(causal_mask, min_dtype)
     
-    processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=256*28*28, max_pixels=512*28*28, padding_side="right")
+    processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct", min_pixels=256*28*28, max_pixels=1024*28*28, padding_side="left")
 
     train_loader = DataLoader(
-        ToyDataSet("train_data/data.json"),
-        batch_size=1,
+        ToyDataSet("json_outputs_train/final_train.json"),
+        batch_size=2,
         collate_fn=partial(collate_fn, processor=processor, device=device)
     )
 
     model.train()
-    epochs = 10
+    epochs = 3
     # import pdb
     # pdb.set_trace()
     optimizer = AdamW(model.parameters(), lr=1e-5)

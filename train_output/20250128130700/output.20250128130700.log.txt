@@ -1,0 +1,9 @@
+2025-01-28 13:07:55-finetune_distributed.py:184-INFO >> Batch 1 of epoch 1/10, training loss : 2.0923731327056885
+2025-01-28 13:07:56-finetune_distributed.py:184-INFO >> Batch 2 of epoch 1/10, training loss : 2.1742494106292725
+2025-01-28 13:07:58-finetune_distributed.py:184-INFO >> Batch 3 of epoch 1/10, training loss : 2.0256011486053467
+2025-01-28 13:08:00-finetune_distributed.py:184-INFO >> Batch 4 of epoch 1/10, training loss : 1.3211627006530762
+2025-01-28 13:08:01-finetune_distributed.py:184-INFO >> Batch 5 of epoch 1/10, training loss : 1.3414560556411743
+2025-01-28 13:08:03-finetune_distributed.py:184-INFO >> Batch 6 of epoch 1/10, training loss : 1.3898391723632812
+2025-01-28 13:08:05-finetune_distributed.py:184-INFO >> Batch 7 of epoch 1/10, training loss : 1.611891746520996
+2025-01-28 13:08:06-finetune_distributed.py:184-INFO >> Batch 8 of epoch 1/10, training loss : 1.6010887622833252
+2025-01-28 13:08:08-finetune_distributed.py:184-INFO >> Batch 9 of epoch 1/10, training loss : 0.7485688924789429

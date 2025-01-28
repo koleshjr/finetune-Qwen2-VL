@@ -1,0 +1,6 @@
+2025-01-28 14:03:23-finetune.py:243-INFO >> Batch 2 of epoch 1/3, average training loss of previous 2 batches: 1.9327451586723328
+2025-01-28 14:03:25-finetune.py:243-INFO >> Batch 4 of epoch 1/3, average training loss of previous 2 batches: 1.5340168476104736
+2025-01-28 14:03:28-finetune.py:243-INFO >> Batch 6 of epoch 1/3, average training loss of previous 2 batches: 0.7574603259563446
+2025-01-28 14:03:31-finetune.py:243-INFO >> Batch 8 of epoch 1/3, average training loss of previous 2 batches: 1.9970929026603699
+2025-01-28 14:03:34-finetune.py:243-INFO >> Batch 10 of epoch 1/3, average training loss of previous 2 batches: 1.4449846148490906
+2025-01-28 14:03:36-finetune.py:243-INFO >> Batch 12 of epoch 1/3, average training loss of previous 2 batches: 1.5225819945335388
